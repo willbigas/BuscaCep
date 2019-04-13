@@ -4,4 +4,4 @@
 #Website : https://viacep.com.br/<br>
 #Contem Lib Externa de : https://github.com/stleary/JSON-java
 
-![Diretorio De Arquivos](https://imgur.com/7P57nog)
+<img src="https://i.imgur.com/7P57nog.png" />
