@@ -2,7 +2,7 @@ package interfaces;
 
 import control.BuscaCep;
 
-public interface BuscaCepEvents {
+public interface BuscaCepEventos {
     /**
      * Quando o CEP for encontrado com sucesso
      * @param cep retorna o objeto BuscaCep

@@ -12,21 +12,21 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import interfaces.BuscaCepEvents;
+import interfaces.BuscaCepEventos;
 
 public abstract class BuscaCepBase {
-    protected List<Cep> CEPs;
+    protected List<Cep> listCeps;
     protected int index;
-    protected String currentCEP;
+    protected String cepAtual;
     
     // váriaveis internas
-    protected BuscaCepEvents Events;
+    protected BuscaCepEventos eventos;
     
     public BuscaCepBase () {
-        CEPs = new ArrayList<>();
+        listCeps = new ArrayList<>();
         index = -1;
-        currentCEP = "00000-000";
-        this.Events = null;
+        cepAtual = "00000-000";
+        this.eventos = null;
     }
     
     // métodos abstratos
@@ -35,20 +35,20 @@ public abstract class BuscaCepBase {
     
     /**
      * Busca um Cep usando um endereço
-     * @param Uf estado
-     * @param Localidade cidade
-     * @param Logradouro nome ou parte do nome da rua, av, viela...
+     * @param uf estado
+     * @param localidade cidade
+     * @param logradouro nome ou parte do nome da rua, av, viela...
      * @throws exceptions.BuscaCepException
      */
-    public void buscarCEP(String Uf, String Localidade, String Logradouro) throws BuscaCepException {
-        buscarCEP(new Cep(Logradouro, Localidade, Uf));
+    public void buscarCEP(String uf, String localidade, String logradouro) throws BuscaCepException {
+        buscarCEP(new Cep(logradouro, localidade, uf));
     }
     
     /**
      * Retona o index atual;
      * @return 
      */
-    public int getIndex() {
+    public int pegaIndex() {
         return index;
     }
     
@@ -57,7 +57,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public int getSize() {
-        return CEPs.size();
+        return listCeps.size();
     }
     
     /**
@@ -66,7 +66,7 @@ public abstract class BuscaCepBase {
      * @return
      */
     public String getCep() {
-        return CEPs.get(index).CEP;
+        return listCeps.get(index).cep;
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class BuscaCepBase {
      * @return
      */
     public String getLogradouro() {
-        return CEPs.get(index).Logradouro;
+        return listCeps.get(index).logradouro;
     }
 
     /**
@@ -84,25 +84,25 @@ public abstract class BuscaCepBase {
      * @return
      */
     public String getComplemento() {
-        return CEPs.get(index).Complemento;
+        return listCeps.get(index).complemento;
     }
 
     /**
-     * Retorna o Bairro
+     * Retorna o bairro
      *
      * @return
      */
     public String getBairro() {
-        return CEPs.get(index).Bairro;
+        return listCeps.get(index).bairro;
     }
 
     /**
-     * Retorna a Cidade
+     * Retorna a cidade
      *
      * @return
      */
-    public String getLocalidade() {
-        return CEPs.get(index).Localidade;
+    public String getCidade() {
+        return listCeps.get(index).cidade;
     }
 
     /**
@@ -111,29 +111,29 @@ public abstract class BuscaCepBase {
      * @return
      */
     public String getUf() {
-        return CEPs.get(index).Uf;
+        return listCeps.get(index).uf;
     }
 
     /**
-     * Retorna o Ibge
+     * Retorna o ibge
      *
      * @return
      */
     public String getIbge() {
-        return CEPs.get(index).Ibge;
+        return listCeps.get(index).ibge;
     }
 
     /**
-     * Retorna a Gia
+     * Retorna a gia
      *
      * @return
      */
     public String getGia() {
-        return CEPs.get(index).Gia;
+        return listCeps.get(index).gia;
     }
     
     /**
-     * Procedimento para obtem dados via GET
+     * Procedimento para obter dados via GET
      *
      * @param urlToRead endereço
      * @return conteúdo remoto
@@ -155,15 +155,15 @@ public abstract class BuscaCepBase {
             
         } catch (MalformedURLException | ProtocolException ex) {
             // verifica os Eventos
-            if (Events instanceof BuscaCepEvents) {
-                Events.erroAoEncontrar(currentCEP);
+            if (eventos instanceof BuscaCepEventos) {
+                eventos.erroAoEncontrar(cepAtual);
             }
             
             throw new BuscaCepException(ex.getMessage(), ex.getClass().getName());
         } catch (IOException ex) {
             // verifica os Eventos
-            if (Events instanceof BuscaCepEvents) {
-                Events.erroAoEncontrar(currentCEP);
+            if (eventos instanceof BuscaCepEventos) {
+                eventos.erroAoEncontrar(cepAtual);
             }
             
             throw new BuscaCepException(ex.getMessage(), ex.getClass().getName());
@@ -178,7 +178,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public boolean move(int index) {
-        if (CEPs.size() > 0 && index >= 0 && index < CEPs.size()) {
+        if (listCeps.size() > 0 && index >= 0 && index < listCeps.size()) {
             this.index = index;
             return true;
         }
@@ -192,7 +192,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public boolean moveFirst() {
-        if (CEPs.size() > 0) {
+        if (listCeps.size() > 0) {
             index = 0;
             return true;
         }
@@ -206,7 +206,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public boolean moveNext() {
-        if (CEPs.size() > 0 && (index + 1) < CEPs.size()) {
+        if (listCeps.size() > 0 && (index + 1) < listCeps.size()) {
             index += 1;
             return true;
         }
@@ -220,7 +220,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public boolean movePrevious() {
-        if (CEPs.size() > 0 && (index - 1) >= 0) {
+        if (listCeps.size() > 0 && (index - 1) >= 0) {
             index -= 1;
             return true;
         }
@@ -234,8 +234,8 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public boolean moveLast() {
-        if (CEPs.size() > 0) {
-            index = CEPs.size() - 1;
+        if (listCeps.size() > 0) {
+            index = listCeps.size() - 1;
             return true;
         }
         
@@ -248,7 +248,7 @@ public abstract class BuscaCepBase {
      * @return 
      */
     public List<Cep> getList() {
-        return CEPs;
+        return listCeps;
     }
     
     /**

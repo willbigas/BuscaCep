@@ -5,7 +5,7 @@ import model.BuscaCepBase;
 import model.Cep;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import interfaces.BuscaCepEvents;
+import interfaces.BuscaCepEventos;
 
 /**
  * Classe java para obter um Cep no BuscaCep
@@ -28,9 +28,9 @@ public class BuscaCep extends BuscaCepBase {
      *
      * @param events eventos para a classe
      */
-    public BuscaCep(BuscaCepEvents events) {
+    public BuscaCep(BuscaCepEventos events) {
         super();
-        this.Events = events;
+        this.eventos = events;
     }
 
     /**
@@ -38,11 +38,10 @@ public class BuscaCep extends BuscaCepBase {
      *
      * @param events eventos para a classe
      * @param cep
-     * @throws buscacep.ViaCEPException caso ocorra algum erro
      */
-    public BuscaCep(String cep, BuscaCepEvents events) throws BuscaCepException {
+    public BuscaCep(String cep, BuscaCepEventos events) throws BuscaCepException {
         super();
-        this.Events = events;
+        this.eventos = events;
         this.buscar(cep);
     }
 
@@ -50,7 +49,6 @@ public class BuscaCep extends BuscaCepBase {
      * Constrói uma nova classe e busca um Cep no ViaCEP
      *
      * @param cep
-     * @throws buscacep.ViaCEPException caso ocorra algum erro
      */
     public BuscaCep(String cep) throws BuscaCepException {
         super();
@@ -61,12 +59,11 @@ public class BuscaCep extends BuscaCepBase {
      * Busca um Cep no BuscaCep
      *
      * @param cep
-     * @throws buscacep.ViaCEPException caso ocorra algum erro
      */
     @Override
     public final void buscar(String cep) throws BuscaCepException {
         // define o cep atual
-        currentCEP = cep;
+        cepAtual = cep;
 
         // define a url
         String url = "http://viacep.com.br/ws/" + cep + "/json/";
@@ -85,19 +82,19 @@ public class BuscaCep extends BuscaCepBase {
                     obj.getString("gia"));
 
             // insere o novo Cep
-            CEPs.add(novoCEP);
+            listCeps.add(novoCEP);
 
             // atualiza o index
-            index = CEPs.size() - 1;
+            index = listCeps.size() - 1;
 
             // verifica os Eventos
-            if (Events instanceof BuscaCepEvents) {
-                Events.sucessoAoEncontrar(this);
+            if (eventos instanceof BuscaCepEventos) {
+                eventos.sucessoAoEncontrar(this);
             }
         } else {
             // verifica os Eventos
-            if (Events instanceof BuscaCepEvents) {
-                Events.erroAoEncontrar(currentCEP);
+            if (eventos instanceof BuscaCepEventos) {
+                eventos.erroAoEncontrar(cepAtual);
             }
 
             throw new BuscaCepException("Não foi possível encontrar o CEP", cep, BuscaCepException.class.getName());
@@ -112,7 +109,7 @@ public class BuscaCep extends BuscaCepBase {
      */
     @Override
     public void buscarCEP(Cep cep) throws BuscaCepException {
-        buscarCEP(cep.Uf, cep.Localidade, cep.Logradouro);
+        buscarCEP(cep.uf, cep.cidade, cep.logradouro);
     }
 
     /**
@@ -126,7 +123,7 @@ public class BuscaCep extends BuscaCepBase {
     @Override
     public void buscarCEP(String Uf, String Localidade, String Logradouro) throws BuscaCepException {
         // define o cep atual
-        currentCEP = "?????-???";
+        cepAtual = "?????-???";
 
         // define a url
         String url = "http://viacep.com.br/ws/" + Uf.toUpperCase() + "/" + Localidade + "/" + Logradouro + "/json/";
@@ -149,26 +146,28 @@ public class BuscaCep extends BuscaCepBase {
                             obj.getString("gia"));
 
                     // insere o novo Cep
-                    CEPs.add(novoCEP);
+                    this.listCeps.add(novoCEP);
 
                     // atualiza o index
-                    index = CEPs.size() - 1;
+                    index = this.listCeps.size() - 1;
 
                     // verifica os Eventos
-                    if (Events instanceof BuscaCepEvents) {
-                        Events.sucessoAoEncontrar(this);
+                    if (eventos instanceof BuscaCepEventos) {
+                        eventos.sucessoAoEncontrar(this);
                     }
                 } else {
                     // verifica os Eventos
-                    if (Events instanceof BuscaCepEvents) {
-                        Events.erroAoEncontrar(currentCEP);
+                    if (eventos instanceof BuscaCepEventos) {
+                        eventos.erroAoEncontrar(cepAtual);
                     }
 
-                    throw new BuscaCepException("Não foi possível validar o CEP", currentCEP, BuscaCepException.class.getName());
+                    throw new BuscaCepException("Não foi possível validar o CEP", cepAtual, BuscaCepException.class.getName());
                 }
             }
         } else {
-            throw new BuscaCepException("Nenhum CEP encontrado", currentCEP, getClass().getName());
+            throw new BuscaCepException("Nenhum CEP encontrado", cepAtual, getClass().getName());
         }
     }
+    
+    
 }
